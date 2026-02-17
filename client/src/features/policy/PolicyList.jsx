@@ -24,15 +24,22 @@ const PolicyList = () => {
     fetchPolicies();
   }, []);
 
-  const getStatusColor = (status) => {
-    const colors = {
-      'DRAFT': '#FFC107',
-      'SUBMITTED': '#2196F3',
-      'ACTIVE': '#4CAF50',
-      'SUSPENDED': '#FF9800',
-      'EXPIRED': '#F44336'
-    };
-    return colors[status] || '#999';
+  const getStatusBadge = (status) => {
+    const base = "px-3 py-1 rounded-full text-xs font-semibold";
+    switch (status) {
+      case 'DRAFT':
+        return `${base} bg-yellow-500/20 text-yellow-400`;
+      case 'SUBMITTED':
+        return `${base} bg-blue-500/20 text-blue-400`;
+      case 'ACTIVE':
+        return `${base} bg-green-500/20 text-green-400`;
+      case 'SUSPENDED':
+        return `${base} bg-orange-500/20 text-orange-400`;
+      case 'EXPIRED':
+        return `${base} bg-red-500/20 text-red-400`;
+      default:
+        return `${base} bg-slate-700 text-slate-400`;
+    }
   };
 
   const handleDelete = async (id) => {
@@ -45,62 +52,118 @@ const PolicyList = () => {
     }
   };
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading policies...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-slate-400 p-8">
+        Loading policies...
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-        <h2>Policies</h2>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-white p-8">
+
+      {/* Header */}
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold">Policies</h2>
+
         {user?.role === 'UNDERWRITER' && (
-          <Link to="/policy/create" style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', textDecoration: 'none', borderRadius: '4px' }}>
+          <Link
+            to="/policy/create"
+            className="px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:opacity-90 transition"
+          >
             Create New Policy
           </Link>
         )}
       </div>
-      {/* Total policies count */}
-      <div style={{ marginBottom: '16px', fontWeight: 'bold', fontSize: '16px', color: '#007bff' }}>
+
+      {/* Total Count */}
+      <div className="mb-6 text-indigo-400 font-semibold">
         Total Policies: {policies.length}
       </div>
-      {error && <div style={{ padding: '10px', backgroundColor: '#ffebee', color: '#c62828', borderRadius: '4px', marginBottom: '20px' }}>{error}</div>}
+
+      {/* Error */}
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg mb-6">
+          {error}
+        </div>
+      )}
+
+      {/* Table Container */}
       {policies.length === 0 ? (
-        <div style={{ padding: '20px', textAlign: 'center', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
-          No policies found. <Link to="/policy/create">Create one</Link>
+        <div className="p-8 text-center backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl text-slate-400">
+          No policies found.{' '}
+          <Link to="/policy/create" className="text-indigo-400 hover:text-indigo-300">
+            Create one
+          </Link>
         </div>
       ) : (
-        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
-              <th style={{ padding: '12px', textAlign: 'left' }}>Policy Number</th>
-              <th style={{ padding: '12px', textAlign: 'left' }}>Insured Name</th>
-              <th style={{ padding: '12px', textAlign: 'left' }}>Type</th>
-              <th style={{ padding: '12px', textAlign: 'left' }}>Premium</th>
-              <th style={{ padding: '12px', textAlign: 'center' }}>Status</th>
-              <th style={{ padding: '12px', textAlign: 'left' }}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {policies.map(policy => (
-              <tr key={policy._id} style={{ borderBottom: '1px solid #ddd' }}>
-                <td style={{ padding: '12px' }}>{policy.policyNumber}</td>
-                <td style={{ padding: '12px' }}>{policy.insuredName}</td>
-                <td style={{ padding: '12px' }}>{policy.lineOfBusiness}</td>
-                <td style={{ padding: '12px' }}>₹{policy.premium?.toFixed(2) || 0}</td>
-                <td style={{ padding: '12px', textAlign: 'center' }}>
-                  <span style={{ padding: '4px 12px', backgroundColor: getStatusColor(policy.status), color: 'white', borderRadius: '4px', fontSize: '12px' }}>
-                    {policy.status}
-                  </span>
-                </td>
-                <td style={{ padding: '12px' }}>
-                  <Link to={`/policy/${policy._id}`} style={{ color: '#007bff', textDecoration: 'none', marginRight: 12 }}>View</Link>
-                  {user?.role === 'UNDERWRITER' && (
-                    <button onClick={() => handleDelete(policy._id)} style={{ color: 'white', background: '#e53935', border: 'none', borderRadius: 4, padding: '4px 12px', cursor: 'pointer' }}>Delete</button>
-                  )}
-                </td>
+        <div className="overflow-x-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl shadow-lg">
+          <table className="w-full text-left">
+            <thead className="border-b border-white/10 text-slate-400 text-sm">
+              <tr>
+                <th className="px-6 py-4">Policy Number</th>
+                <th className="px-6 py-4">Insured Name</th>
+                <th className="px-6 py-4">Type</th>
+                <th className="px-6 py-4">Premium</th>
+                <th className="px-6 py-4 text-center">Status</th>
+                <th className="px-6 py-4">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {policies.map(policy => (
+                <tr
+                  key={policy._id}
+                  className="border-b border-white/5 hover:bg-white/5 transition"
+                >
+                  <td className="px-6 py-4 text-white">
+                    {policy.policyNumber}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-300">
+                    {policy.insuredName}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-300">
+                    {policy.lineOfBusiness}
+                  </td>
+
+                  <td className="px-6 py-4 text-slate-300">
+                    ₹{policy.premium?.toFixed(2) || 0}
+                  </td>
+
+                  <td className="px-6 py-4 text-center">
+                    <span className={getStatusBadge(policy.status)}>
+                      {policy.status}
+                    </span>
+                  </td>
+
+                  <td className="px-6 py-4">
+                    <Link
+                      to={`/policy/${policy._id}`}
+                      className="text-indigo-400 hover:text-indigo-300 mr-4"
+                    >
+                      View
+                    </Link>
+
+                    {user?.role === 'UNDERWRITER' && (
+                      <button
+                        onClick={() => handleDelete(policy._id)}
+                        className="px-3 py-1 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition"
+                      >
+                        Delete
+                      </button>
+                    )}
+                  </td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
+
     </div>
   );
 };

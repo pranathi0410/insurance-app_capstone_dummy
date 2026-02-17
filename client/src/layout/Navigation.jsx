@@ -10,7 +10,6 @@ const Navigation = () => {
 
   const isActive = (path) => location.pathname.startsWith(path);
 
-
   let menuItems = [];
   if (user?.role === 'ADMIN') {
     menuItems.push({ label: 'Users List', path: '/admin', icon: '⚙️' });
@@ -34,27 +33,31 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white shadow-sm border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <nav className="bg-slate-950 border-b border-white/5 shadow-md sticky top-0 z-50">
+
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex justify-between items-center h-16">
+
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+          <Link to="/" className="flex items-center space-x-3">
+            <div className="w-9 h-9 bg-gradient-to-r from-indigo-600 to-cyan-500 rounded-xl flex items-center justify-center shadow-md">
               <span className="text-white font-bold text-lg">I</span>
             </div>
-            <span className="text-lg font-bold text-slate-900">InsureHub</span>
+            <span className="text-lg font-bold text-white tracking-wide">
+              Insure<span className="text-indigo-400">Sphere</span>
+            </span>
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-2">
             {menuItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   isActive(item.path)
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
                 }`}
               >
                 <span className="mr-1">{item.icon}</span>
@@ -63,23 +66,28 @@ const Navigation = () => {
             ))}
           </div>
 
-          {/* User Menu */}
+          {/* User Section */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="text-sm">
-              <div className="font-medium text-slate-900">{user?.username}</div>
-              <div className="text-xs text-slate-500">{user?.role?.replace(/_/g, ' ')}</div>
+            <div className="text-right">
+              <div className="text-sm font-medium text-white">
+                {user?.username}
+              </div>
+              <div className="text-xs text-slate-400">
+                {user?.role?.replace(/_/g, ' ')}
+              </div>
             </div>
+
             <button
               onClick={handleLogout}
-              className="btn btn-secondary text-sm"
+              className="px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-indigo-600 to-cyan-500 text-white hover:opacity-90 transition-all"
             >
               Logout
             </button>
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Mobile Button */}
           <button
-            className="md:hidden p-2 rounded-lg hover:bg-slate-100"
+            className="md:hidden p-2 rounded-lg text-slate-300 hover:bg-white/10"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -90,15 +98,15 @@ const Navigation = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden pb-4 space-y-2">
+          <div className="md:hidden pb-4 pt-3 space-y-2">
             {menuItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`block px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`block px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                   isActive(item.path)
-                    ? 'bg-primary-100 text-primary-700'
-                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/30'
+                    : 'text-slate-300 hover:bg-white/10'
                 }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
@@ -106,9 +114,10 @@ const Navigation = () => {
                 {item.label}
               </Link>
             ))}
+
             <button
               onClick={handleLogout}
-              className="w-full btn btn-secondary text-sm text-left"
+              className="w-full mt-2 px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-indigo-600 to-cyan-500 text-white hover:opacity-90 transition-all"
             >
               Logout
             </button>

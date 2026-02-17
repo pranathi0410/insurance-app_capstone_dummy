@@ -1,7 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
 import { adminAPI } from '../../services/api';
+
+/* ===========================
+   USER FORM (DARK MODAL)
+=========================== */
 
 const UserForm = ({ user, onSave, onClose }) => {
   const [form, setForm] = useState({
@@ -11,6 +13,7 @@ const UserForm = ({ user, onSave, onClose }) => {
     role: user?.role || 'UNDERWRITER',
     status: user?.status || 'ACTIVE',
   });
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -23,11 +26,8 @@ const UserForm = ({ user, onSave, onClose }) => {
     e.preventDefault();
     setSaving(true);
     try {
-      // Only send password if creating a new user
       const payload = { ...form };
-      if (user) {
-        delete payload.password;
-      }
+      if (user) delete payload.password;
       await onSave(payload);
       onClose();
     } catch (err) {
@@ -38,181 +38,91 @@ const UserForm = ({ user, onSave, onClose }) => {
   };
 
   return (
-    <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100vw',
-      height: '100vh',
-      background: 'rgba(0, 0, 0, 0.4)',
-      zIndex: 1000,
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backdropFilter: 'blur(4px)'
-    }}>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
       <form
         onSubmit={handleSubmit}
-        style={{
-          background: 'white',
-          padding: '28px',
-          borderRadius: '10px',
-          minWidth: '380px',
-          maxWidth: '90vw',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
-        }}
+        className="bg-slate-950 border border-white/10 rounded-2xl p-8 w-full max-w-md shadow-2xl text-white"
       >
-        <h3 style={{ marginBottom: '20px', fontSize: '18px', fontWeight: '600' }}>
+        <h3 className="text-xl font-semibold mb-6">
           {user ? 'Edit User' : 'Create New User'}
         </h3>
 
         {error && (
-          <div style={{
-            color: '#991b1b',
-            backgroundColor: '#fee2e2',
-            padding: '10px 12px',
-            borderRadius: '6px',
-            marginBottom: '16px',
-            fontSize: '13px',
-            border: '1px solid #fecaca'
-          }}>
+          <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg mb-4 text-sm">
             {error}
           </div>
         )}
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ marginBottom: '6px' }}>Username</label>
+        <div className="space-y-4">
+
           <input
             name="username"
+            placeholder="Username"
             value={form.username}
             onChange={handleChange}
             required
             disabled={!!user}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px',
-              opacity: user ? 0.6 : 1
-            }}
+            className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-indigo-500 outline-none"
           />
-          {user && <p style={{ fontSize: '12px', color: '#6b7280', marginTop: '4px' }}>Username cannot be changed</p>}
-        </div>
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ marginBottom: '6px' }}>Email</label>
           <input
             name="email"
             type="email"
+            placeholder="Email"
             value={form.email}
             onChange={handleChange}
             required
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px'
-            }}
+            className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-indigo-500 outline-none"
           />
-        </div>
 
-        {!user && (
-          <div style={{ marginBottom: '16px' }}>
-            <label style={{ marginBottom: '6px' }}>Password</label>
+          {!user && (
             <input
               name="password"
               type="password"
+              placeholder="Password"
               value={form.password}
               onChange={handleChange}
               required
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid #d1d5db',
-                borderRadius: '6px',
-                fontSize: '14px'
-              }}
+              className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-indigo-500 outline-none"
             />
-          </div>
-        )}
+          )}
 
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ marginBottom: '6px' }}>Role</label>
           <select
             name="role"
             value={form.role}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px'
-            }}
+            className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-indigo-500 outline-none"
           >
             <option value="ADMIN">Admin</option>
             <option value="UNDERWRITER">Underwriter</option>
             <option value="CLAIMS_ADJUSTER">Claims Adjuster</option>
             <option value="REINSURANCE_MANAGER">Reinsurance Manager</option>
           </select>
-        </div>
 
-        <div style={{ marginBottom: '20px' }}>
-          <label style={{ marginBottom: '6px' }}>Status</label>
           <select
             name="status"
             value={form.status}
             onChange={handleChange}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px'
-            }}
+            className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 focus:border-indigo-500 outline-none"
           >
             <option value="ACTIVE">Active</option>
             <option value="INACTIVE">Inactive</option>
           </select>
+
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+        <div className="flex justify-end gap-3 mt-6">
           <button
             type="button"
             onClick={onClose}
-            style={{
-              padding: '8px 20px',
-              background: '#e5e7eb',
-              color: '#374151',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => e.target.style.background = '#d1d5db'}
-            onMouseOut={(e) => e.target.style.background = '#e5e7eb'}
+            className="px-4 py-2 rounded-xl bg-slate-700 hover:bg-slate-600 transition"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={saving}
-            style={{
-              padding: '8px 20px',
-              background: '#0284c7',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: '500',
-              cursor: saving ? 'not-allowed' : 'pointer',
-              opacity: saving ? 0.7 : 1,
-              transition: 'all 0.2s'
-            }}
-            onMouseOver={(e) => !saving && (e.target.style.background = '#0369a1')}
-            onMouseOut={(e) => !saving && (e.target.style.background = '#0284c7')}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:opacity-90 transition"
           >
             {saving ? 'Saving...' : 'Save'}
           </button>
@@ -222,8 +132,11 @@ const UserForm = ({ user, onSave, onClose }) => {
   );
 };
 
+/* ===========================
+   USER LIST (DARK TABLE)
+=========================== */
+
 const UserList = () => {
-  const { user } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -235,7 +148,7 @@ const UserList = () => {
     try {
       const res = await adminAPI.getUsers();
       setUsers(res.data);
-    } catch (err) {
+    } catch {
       setError('Failed to load users');
     } finally {
       setLoading(false);
@@ -245,16 +158,6 @@ const UserList = () => {
   useEffect(() => {
     fetchUsers();
   }, []);
-
-  const handleCreate = () => {
-    setEditUser(null);
-    setShowForm(true);
-  };
-
-  const handleEdit = (user) => {
-    setEditUser(user);
-    setShowForm(true);
-  };
 
   const handleSave = async (form) => {
     if (editUser) {
@@ -266,219 +169,104 @@ const UserList = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this user?')) return;
-    try {
-      await adminAPI.deleteUser(id);
-      setUsers(users.filter(u => u._id !== id));
-    } catch (err) {
-      setError('Failed to delete user.');
-    }
+    if (!window.confirm('Are you sure?')) return;
+    await adminAPI.deleteUser(id);
+    setUsers(users.filter(u => u._id !== id));
   };
 
   if (loading) {
     return (
-      <div style={{ padding: '20px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ width: '20px', height: '20px', border: '3px solid #e5e7eb', borderTop: '3px solid #0284c7', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-          Loading users...
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-slate-400 p-8">
+        Loading users...
       </div>
     );
   }
 
-  const roleColors = {
-    'ADMIN': '#F44336',
-    'UNDERWRITER': '#2196F3',
-    'CLAIMS_ADJUSTER': '#FF9800',
-    'REINSURANCE_MANAGER': '#4CAF50'
-  };
-
   return (
-    <div style={{ padding: '24px', maxWidth: '100%' }}>
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
-      
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ marginBottom: '8px' }}>User Management</h2>
-        <p style={{ color: '#6b7280', fontSize: '14px' }}>Manage system users and their roles</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-white p-8">
+
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold mb-2">User Management</h2>
+        <p className="text-slate-400">Manage system users and roles</p>
       </div>
 
-      <div style={{ marginBottom: '20px' }}>
-        <button 
-          onClick={handleCreate}
-          style={{
-            padding: '10px 20px',
-            background: '#0284c7',
-            color: 'white',
-            border: 'none',
-            borderRadius: '6px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-          }}
-          onMouseOver={(e) => {
-            e.target.style.background = '#0369a1';
-            e.target.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.15)';
-          }}
-          onMouseOut={(e) => {
-            e.target.style.background = '#0284c7';
-            e.target.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
-          }}
-        >
-          + Create User
-        </button>
-      </div>
+      <button
+        onClick={() => { setEditUser(null); setShowForm(true); }}
+        className="mb-6 px-5 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 hover:opacity-90 transition"
+      >
+        + Create User
+      </button>
 
       {error && (
-        <div style={{
-          padding: '12px 16px',
-          backgroundColor: '#fee2e2',
-          color: '#991b1b',
-          borderRadius: '6px',
-          marginBottom: '20px',
-          border: '1px solid #fecaca',
-          fontSize: '14px'
-        }}>
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg mb-4">
           {error}
         </div>
       )}
 
-      {users.length === 0 ? (
-        <div style={{
-          padding: '40px 20px',
-          textAlign: 'center',
-          backgroundColor: '#f9fafb',
-          borderRadius: '8px',
-          border: '1px dashed #d1d5db'
-        }}>
-          <p style={{ color: '#6b7280', fontSize: '14px' }}>No users found. Create one to get started.</p>
-        </div>
-      ) : (
-        <div style={{
-          overflowX: 'auto',
-          borderRadius: '8px',
-          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-        }}>
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            backgroundColor: 'white'
-          }}>
-            <thead>
-              <tr style={{
-                backgroundColor: '#f3f4f6',
-                borderBottom: '2px solid #e5e7eb'
-              }}>
-                <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>Username</th>
-                <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>Email</th>
-                <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>Role</th>
-                <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#374151' }}>Status</th>
-                {/* <th style={{ padding: '14px 16px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>Last Login</th> */}
-                <th style={{ padding: '14px 16px', textAlign: 'center', fontSize: '12px', fontWeight: '600', color: '#374151' }}>Actions</th>
+      <div className="overflow-x-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl">
+        <table className="w-full text-left">
+          <thead className="border-b border-white/10 text-slate-400 text-sm">
+            <tr>
+              <th className="px-6 py-4">Username</th>
+              <th className="px-6 py-4">Email</th>
+              <th className="px-6 py-4">Role</th>
+              <th className="px-6 py-4 text-center">Status</th>
+              <th className="px-6 py-4 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map(user => (
+              <tr key={user._id} className="border-b border-white/5 hover:bg-white/5 transition">
+                <td className="px-6 py-4 font-medium text-white">
+                  {user.username}
+                </td>
+                <td className="px-6 py-4 text-slate-400">
+                  {user.email}
+                </td>
+                <td className="px-6 py-4 text-indigo-400 text-sm">
+                  {user.role.replace(/_/g, ' ')}
+                </td>
+                <td className="px-6 py-4 text-center">
+                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                    user.status === 'ACTIVE'
+                      ? 'bg-green-500/20 text-green-400'
+                      : 'bg-slate-700 text-slate-400'
+                  }`}>
+                    {user.status}
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-center space-x-2">
+                  <button
+                    onClick={() => { setEditUser(user); setShowForm(true); }}
+                    className="px-3 py-1 rounded-lg bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(user._id)}
+                    className="px-3 py-1 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                  >
+                    Delete
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {users.map((user, idx) => (
-                <tr 
-                  key={user._id}
-                  style={{
-                    borderBottom: '1px solid #e5e7eb',
-                    backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9fafb',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = idx % 2 === 0 ? '#ffffff' : '#f9fafb';
-                  }}
-                >
-                  <td style={{ padding: '14px 16px', fontSize: '14px', fontWeight: '500', color: '#111827' }}>{user.username}</td>
-                  <td style={{ padding: '14px 16px', fontSize: '13px', color: '#6b7280' }}>{user.email}</td>
-                  <td style={{ padding: '14px 16px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '5px 12px',
-                      backgroundColor: roleColors[user.role] || '#999',
-                      color: 'white',
-                      borderRadius: '5px',
-                      fontSize: '11px',
-                      fontWeight: '600'
-                    }}>
-                      {user.role.replace(/_/g, ' ')}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '5px 12px',
-                      backgroundColor: user.status === 'ACTIVE' ? '#d1fae5' : '#f3f4f6',
-                      color: user.status === 'ACTIVE' ? '#047857' : '#6b7280',
-                      borderRadius: '5px',
-                      fontSize: '11px',
-                      fontWeight: '600'
-                    }}>
-                      {user.status}
-                    </span>
-                  </td>
-                  {/* <td style={{ padding: '14px 16px', fontSize: '13px', color: '#6b7280' }}>
-                    {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleDateString() : 'Never logged in'}
-                  </td> */}
-                  <td style={{ padding: '14px 16px', textAlign: 'center' }}>
-                    <button
-                      onClick={() => handleEdit(user)}
-                      style={{
-                        padding: '6px 12px',
-                        background: '#f59e0b',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontWeight: '600',
-                        marginRight: '8px',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseOver={(e) => e.target.style.background = '#d97706'}
-                      onMouseOut={(e) => e.target.style.background = '#f59e0b'}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(user._id)}
-                      style={{
-                        padding: '6px 12px',
-                        background: '#e53935',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '4px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        fontSize: '12px',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseOver={(e) => e.target.style.background = '#c62828'}
-                      onMouseOut={(e) => e.target.style.background = '#e53935'}
-                    >
-                      Delete
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <div style={{ marginTop: '16px', color: '#6b7280', fontSize: '12px' }}>
+      <div className="mt-4 text-slate-400 text-sm">
         Total users: {users.length}
       </div>
 
       {showForm && (
-        <UserForm user={editUser} onSave={handleSave} onClose={() => setShowForm(false)} />
+        <UserForm
+          user={editUser}
+          onSave={handleSave}
+          onClose={() => setShowForm(false)}
+        />
       )}
+
     </div>
   );
 };

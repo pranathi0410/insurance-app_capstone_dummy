@@ -17,11 +17,12 @@ const LoginPage = () => {
     setIsLoading(true);
     try {
       const res = await authAPI.login(username, password);
-      // Patch: ensure user object has _id for backend compatibility
+
       const userObj = {
         ...res.data.user,
-        _id: res.data.user.id // backend returns 'id', but MongoDB uses '_id'
+        _id: res.data.user.id
       };
+
       login(userObj, res.data.token);
       navigate('/');
     } catch (err) {
@@ -32,60 +33,71 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-slate-100 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md">
-        {/* Logo & Title */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-2xl mb-4">
-            <span className="text-3xl font-bold text-white">I</span>
-          </div>
-          <h1 className="text-3xl font-bold text-slate-900">InsureHub</h1>
-          <p className="text-slate-600 mt-2">Insurance & Reinsurance Management</p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black flex items-center justify-center px-4 relative overflow-hidden">
+
+      {/* Background Glow */}
+      <div className="absolute w-72 h-72 bg-indigo-600 rounded-full blur-3xl opacity-20 top-10 left-10"></div>
+      <div className="absolute w-72 h-72 bg-cyan-500 rounded-full blur-3xl opacity-20 bottom-10 right-10"></div>
+
+      <div className="w-full max-w-md relative z-10">
+
+        {/* Title */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-white tracking-wide">
+            Insure<span className="text-indigo-500">Sphere</span>
+          </h1>
+          <p className="text-slate-400 mt-3 text-sm">
+            Smart Insurance & Reinsurance Platform
+          </p>
         </div>
 
-        {/* Login Form Card */}
-        <div className="card-lg">
+        {/* Glass Card */}
+        <div className="backdrop-blur-xl bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-8">
+
           <form onSubmit={handleSubmit} className="space-y-6">
+
+            {/* Username */}
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm text-slate-400 mb-2">
                 Username
               </label>
               <input
-                id="username"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Enter username"
                 value={username}
                 onChange={e => setUsername(e.target.value)}
-                className="input"
                 required
+                className="w-full px-4 py-3 rounded-xl bg-slate-900/70 text-white border border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
               />
             </div>
 
+            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm text-slate-400 mb-2">
                 Password
               </label>
               <input
-                id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Enter password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                className="input"
                 required
+                className="w-full px-4 py-3 rounded-xl bg-slate-900/70 text-white border border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
               />
             </div>
 
+            {/* Error */}
             {error && (
-              <div className="alert alert-error">
+              <div className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-lg">
                 {error}
               </div>
             )}
 
+            {/* Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className={`w-full btn btn-primary ${isLoading ? 'btn-disabled' : ''}`}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-cyan-500 text-white font-semibold hover:opacity-90 transition-all disabled:opacity-50"
             >
               {isLoading ? (
                 <span className="flex items-center justify-center">
@@ -98,21 +110,12 @@ const LoginPage = () => {
             </button>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="mt-6 pt-6 border-t border-slate-200">
-            <p className="text-xs text-slate-600 text-center mb-3">Demo Credentials</p>
-            <div className="space-y-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-lg">
-              <p><strong>Admin:</strong> admin1 / password123</p>
-              <p><strong>UNDERWRITER:</strong> underwriter1 / password123</p>
-              <p><strong>Claims Adjuster:</strong> claimsadjuster1 / password123</p>
-              <p><strong>Reinsurance Manager:</strong> reinsurance1 / password123</p>
-            </div>
-          </div>
+          
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-slate-600 mt-6">
-          © 2026 InsureHub. All rights reserved.
+        <p className="text-center text-xs text-slate-500 mt-8">
+          © 2026 InsureSphere. All rights reserved.
         </p>
       </div>
     </div>

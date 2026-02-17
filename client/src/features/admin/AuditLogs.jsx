@@ -31,86 +31,86 @@ const AuditLogs = () => {
     return true;
   });
 
-  const getActionColor = (action) => {
+  const formatDate = (date) => new Date(date).toLocaleString();
+
+  const getActionBadge = (action) => {
+    const base = "px-3 py-1 rounded-full text-xs font-semibold";
     switch (action) {
       case 'CREATE':
-        return '#22c55e';
+        return `${base} bg-green-500/20 text-green-400`;
       case 'UPDATE':
-        return '#0284c7';
+        return `${base} bg-blue-500/20 text-blue-400`;
       case 'DELETE':
-        return '#dc2626';
+        return `${base} bg-red-500/20 text-red-400`;
       case 'APPROVE':
-        return '#9333ea';
+        return `${base} bg-purple-500/20 text-purple-400`;
       default:
-        return '#6b7280';
+        return `${base} bg-slate-700 text-slate-400`;
     }
   };
 
-  const getEntityColor = (entity) => {
+  const getEntityBadge = (entity) => {
+    const base = "px-3 py-1 rounded-full text-xs font-semibold";
     switch (entity) {
       case 'POLICY':
-        return '#2196F3';
+        return `${base} bg-blue-500/20 text-blue-400`;
       case 'CLAIM':
-        return '#FF9800';
+        return `${base} bg-orange-500/20 text-orange-400`;
       case 'TREATY':
-        return '#4CAF50';
+        return `${base} bg-green-500/20 text-green-400`;
       case 'USER':
-        return '#F44336';
+        return `${base} bg-red-500/20 text-red-400`;
       default:
-        return '#999';
+        return `${base} bg-slate-700 text-slate-400`;
     }
-  };
-
-  const formatDate = (date) => {
-    return new Date(date).toLocaleString();
   };
 
   if (loading) {
-    return <div style={{ padding: '20px' }}>Loading audit logs...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-slate-400 p-8">
+        Loading audit logs...
+      </div>
+    );
   }
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ marginBottom: '16px' }}>Audit Logs</h2>
-        <p style={{ color: '#6b7280', marginBottom: '16px' }}>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-white p-8">
+
+      {/* Force dropdown options styling */}
+      <style>
+        {`
+          select option {
+            background-color: #0f172a;
+            color: white;
+          }
+        `}
+      </style>
+
+      {/* Header */}
+      <div className="mb-8">
+        <h2 className="text-3xl font-bold mb-2">Audit Logs</h2>
+        <p className="text-slate-400">
           Complete history of all system changes and actions performed by users.
         </p>
       </div>
 
+      {/* Error */}
       {error && (
-        <div style={{
-          padding: '12px',
-          backgroundColor: '#fee2e2',
-          color: '#991b1b',
-          borderRadius: '6px',
-          marginBottom: '20px',
-          border: '1px solid #fecaca'
-        }}>
+        <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-lg mb-6">
           {error}
         </div>
       )}
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '16px',
-        marginBottom: '20px'
-      }}>
+      {/* Filters */}
+      <div className="grid md:grid-cols-2 gap-6 mb-6">
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>
+          <label className="block text-sm text-slate-400 mb-2">
             Filter by Entity Type
           </label>
           <select
             value={filterEntity}
             onChange={(e) => setFilterEntity(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px'
-            }}
+            className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-indigo-500 outline-none appearance-none"
           >
             <option value="">All Types</option>
             <option value="POLICY">Policy</option>
@@ -121,19 +121,13 @@ const AuditLogs = () => {
         </div>
 
         <div>
-          <label style={{ display: 'block', marginBottom: '6px', fontWeight: 500 }}>
+          <label className="block text-sm text-slate-400 mb-2">
             Filter by Action
           </label>
           <select
             value={filterAction}
             onChange={(e) => setFilterAction(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 12px',
-              border: '1px solid #d1d5db',
-              borderRadius: '6px',
-              fontSize: '14px'
-            }}
+            className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white focus:border-indigo-500 outline-none appearance-none"
           >
             <option value="">All Actions</option>
             <option value="CREATE">Create</option>
@@ -144,125 +138,71 @@ const AuditLogs = () => {
         </div>
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
+      {/* Table Container */}
+      <div className="overflow-x-auto backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl shadow-lg">
+
         {filteredLogs.length === 0 ? (
-          <div style={{
-            padding: '24px',
-            textAlign: 'center',
-            backgroundColor: '#f9fafb',
-            borderRadius: '6px',
-            border: '1px solid #e5e7eb'
-          }}>
+          <div className="p-8 text-center text-slate-400">
             No audit logs found
           </div>
         ) : (
-          <table style={{
-            width: '100%',
-            borderCollapse: 'collapse',
-            backgroundColor: 'white',
-            borderRadius: '8px',
-            overflow: 'hidden',
-            boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-          }}>
-            <thead>
-              <tr style={{
-                backgroundColor: '#f3f4f6',
-                borderBottom: '2px solid #e5e7eb'
-              }}>
-                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  Timestamp
-                </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  Entity Type
-                </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  Action
-                </th>
-                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  Performed By
-                </th>
-                {/* <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  IP Address
-                </th> */}
-                <th style={{ padding: '12px', textAlign: 'left', fontSize: '12px', fontWeight: '600', color: '#374151' }}>
-                  Details
-                </th>
+          <table className="w-full text-left">
+            <thead className="border-b border-white/10 text-slate-400 text-sm">
+              <tr>
+                <th className="px-6 py-4">Timestamp</th>
+                <th className="px-6 py-4">Entity Type</th>
+                <th className="px-6 py-4">Action</th>
+                <th className="px-6 py-4">Performed By</th>
+                <th className="px-6 py-4">Details</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredLogs.map((log, index) => (
                 <tr
                   key={index}
-                  style={{
-                    borderBottom: '1px solid #e5e7eb',
-                    backgroundColor: index % 2 === 0 ? '#ffffff' : '#f9fafb',
-                    transition: 'background-color 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f3f4f6'}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f9fafb';
-                  }}
+                  className="border-b border-white/5 hover:bg-white/5 transition"
                 >
-                  <td style={{ padding: '12px', fontSize: '13px', color: '#374151' }}>
+                  <td className="px-6 py-4 text-slate-300 text-sm">
                     {formatDate(log.performedAt)}
                   </td>
-                  <td style={{ padding: '12px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '4px 10px',
-                      backgroundColor: getEntityColor(log.entityType),
-                      color: 'white',
-                      borderRadius: '4px',
-                      fontSize: '11px',
-                      fontWeight: '600'
-                    }}>
+
+                  <td className="px-6 py-4">
+                    <span className={getEntityBadge(log.entityType)}>
                       {log.entityType}
                     </span>
                   </td>
-                  <td style={{ padding: '12px' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      padding: '4px 10px',
-                      backgroundColor: getActionColor(log.action),
-                      color: 'white',
-                      borderRadius: '4px',
-                      fontSize: '11px',
-                      fontWeight: '600'
-                    }}>
+
+                  <td className="px-6 py-4">
+                    <span className={getActionBadge(log.action)}>
                       {log.action}
                     </span>
                   </td>
-                  <td style={{ padding: '12px', fontSize: '13px', color: '#374151' }}>
+
+                  <td className="px-6 py-4 text-slate-300 text-sm">
                     {log.performedBy?.username || 'System'}
                   </td>
-                  {/* <td style={{ padding: '12px', fontSize: '12px', color: '#6b7280' }}>
-                    {log.ipAddress || 'N/A'}
-                  </td> */}
-                  <td style={{ padding: '12px' }}>
-                    <details style={{ cursor: 'pointer' }}>
-                      <summary style={{ color: '#0284c7', fontWeight: '500' }}>View</summary>
-                      <div style={{
-                        marginTop: '8px',
-                        padding: '8px',
-                        backgroundColor: '#f0f9ff',
-                        borderRadius: '4px',
-                        fontSize: '12px',
-                        fontFamily: 'monospace',
-                        maxHeight: '200px',
-                        overflowY: 'auto'
-                      }}>
+
+                  <td className="px-6 py-4 text-sm">
+                    <details className="cursor-pointer">
+                      <summary className="text-indigo-400 hover:text-indigo-300">
+                        View
+                      </summary>
+
+                      <div className="mt-3 bg-slate-900 border border-slate-700 rounded-lg p-4 text-xs font-mono max-h-64 overflow-y-auto">
                         {log.oldValue && (
-                          <div>
-                            <strong>Old:</strong>
-                            <pre style={{ margin: '4px 0', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                          <div className="mb-4">
+                            <div className="text-red-400 mb-1">Old:</div>
+                            <pre className="whitespace-pre-wrap break-words">
                               {JSON.stringify(log.oldValue, null, 2)}
                             </pre>
                           </div>
                         )}
+
                         {log.newValue && (
                           <div>
-                            <strong>New:</strong>
-                            <pre style={{ margin: '4px 0', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+                            <div className="text-green-400 mb-1">New:</div>
+                            <pre className="whitespace-pre-wrap break-words">
                               {JSON.stringify(log.newValue, null, 2)}
                             </pre>
                           </div>
@@ -277,9 +217,10 @@ const AuditLogs = () => {
         )}
       </div>
 
-      <div style={{ marginTop: '16px', color: '#6b7280', fontSize: '12px' }}>
+      <div className="mt-4 text-slate-400 text-sm">
         Showing {filteredLogs.length} of {logs.length} logs
       </div>
+
     </div>
   );
 };
