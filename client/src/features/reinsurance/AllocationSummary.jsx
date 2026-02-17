@@ -31,7 +31,7 @@ const AllocationSummary = ({ policyId }) => {
 
   return (
     <div style={{ marginTop: '20px' }}>
-      <h3>Allocation Summary</h3>
+      <h3 className='text-white'>Allocation Summary</h3>
       <div style={{ display: 'flex', gap: '40px', marginTop: '10px' }}>
         <div style={{ background: '#e3f2fd', padding: '16px', borderRadius: '8px', minWidth: '120px' }}>
           <strong>Retained Risk:</strong>

@@ -16,7 +16,6 @@ const ClaimDetails = () => {
       setClaim(res.data);
     } catch (err) {
       setError('Failed to load claim details.');
-      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -27,85 +26,155 @@ const ClaimDetails = () => {
     // eslint-disable-next-line
   }, [id]);
 
-  if (loading) return <div style={{ padding: '20px' }}>Loading...</div>;
-  if (error) return <div style={{ padding: '20px', color: 'red' }}>{error}</div>;
-  if (!claim) return <div style={{ padding: '20px' }}>Claim not found</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen bg-slate-950 p-8 text-slate-400">
+        Loading...
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="min-h-screen bg-slate-950 p-8 text-red-400">
+        {error}
+      </div>
+    );
+
+  if (!claim)
+    return (
+      <div className="min-h-screen bg-slate-950 p-8 text-slate-400">
+        Claim not found
+      </div>
+    );
 
   const getStatusBadge = (status) => {
     const colors = {
-      'SUBMITTED': '#2196F3',
-      'IN_REVIEW': '#FF9800',
-      'APPROVED': '#4CAF50',
-      'REJECTED': '#F44336',
-      'SETTLED': '#9C27B0'
+      SUBMITTED: 'bg-blue-600',
+      IN_REVIEW: 'bg-orange-500',
+      APPROVED: 'bg-green-600',
+      REJECTED: 'bg-red-600',
+      SETTLED: 'bg-purple-600'
     };
+
     return (
-      <span style={{ padding: '6px 14px', backgroundColor: colors[status] || '#999', color: 'white', borderRadius: '20px', fontSize: '12px', fontWeight: 'bold' }}>
+      <span
+        className={`px-4 py-1 rounded-full text-xs font-semibold text-white ${colors[status] || 'bg-slate-600'}`}
+      >
         {status}
       </span>
     );
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <button onClick={() => navigate('/claims')} style={{ marginBottom: '20px', padding: '8px 16px', backgroundColor: '#f0f0f0', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}>
-        Back to Claims
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-8">
+
+      {/* Back Button */}
+      <button
+        onClick={() => navigate('/claims')}
+        className="mb-6 px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 transition"
+      >
+        ← Back to Claims
       </button>
 
-      <div style={{ backgroundColor: '#f5f5f5', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h2 style={{ marginTop: 0 }}>Claim Details</h2>
+      {/* Main Card */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-xl mb-8">
+
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            Claim Details
+          </h2>
           {getStatusBadge(claim.status)}
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div>
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Claim Number:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px' }}>{claim.claimNumber}</div>
+        {/* Grid Layout */}
+        <div className="grid md:grid-cols-2 gap-8">
 
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Related Policy:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px' }}>{claim.policyId?.policyNumber || '-'}</div>
+          {/* Left Column */}
+          <div className="space-y-6">
+            <Detail label="Claim Number" value={claim.claimNumber} />
 
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Claim Amount:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px', fontSize: '16px', fontWeight: 'bold', color: '#d32f2f' }}>
-              ₹{claim.claimAmount?.toFixed(2) || 0}
-            </div>
+            <Detail
+              label="Related Policy"
+              value={claim.policyId?.policyNumber || '-'}
+            />
 
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Incident Date:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px' }}>
-              {claim.incidentDate ? new Date(claim.incidentDate).toLocaleDateString() : '-'}
-            </div>
+            <Detail
+              label="Claim Amount"
+              value={`₹${claim.claimAmount?.toFixed(2) || 0}`}
+              highlight="text-red-400"
+            />
+
+            <Detail
+              label="Incident Date"
+              value={
+                claim.incidentDate
+                  ? new Date(claim.incidentDate).toLocaleDateString()
+                  : '-'
+              }
+            />
           </div>
 
-          <div>
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Approved Amount:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px', fontSize: '16px', fontWeight: 'bold', color: '#388e3c' }}>
-              ₹{claim.approvedAmount?.toFixed(2) || 'Pending'}
-            </div>
+          {/* Right Column */}
+          <div className="space-y-6">
+            <Detail
+              label="Approved Amount"
+              value={
+                claim.approvedAmount
+                  ? `₹${claim.approvedAmount.toFixed(2)}`
+                  : 'Pending'
+              }
+              highlight="text-green-400"
+            />
 
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Reported Date:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px' }}>
-              {claim.reportedDate ? new Date(claim.reportedDate).toLocaleDateString() : '-'}
-            </div>
+            <Detail
+              label="Reported Date"
+              value={
+                claim.reportedDate
+                  ? new Date(claim.reportedDate).toLocaleDateString()
+                  : '-'
+              }
+            />
 
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Handled By:</label>
-            <div style={{ padding: '8px', backgroundColor: 'white', borderRadius: '4px', marginBottom: '15px' }}>
-              {claim.handledBy?.username || '-'}
-            </div>
+            <Detail
+              label="Handled By"
+              value={claim.handledBy?.username || '-'}
+            />
           </div>
         </div>
 
+        {/* Remarks */}
         {claim.remarks && (
-          <div style={{ marginTop: '20px' }}>
-            <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>Remarks:</label>
-            <div style={{ padding: '12px', backgroundColor: 'white', borderRadius: '4px', lineHeight: '1.5' }}>{claim.remarks}</div>
+          <div className="mt-8">
+            <label className="block text-slate-400 text-sm mb-2">
+              Remarks
+            </label>
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 text-slate-300 leading-relaxed">
+              {claim.remarks}
+            </div>
           </div>
         )}
       </div>
 
+      {/* Actions */}
       <ClaimActions claim={claim} refresh={fetchClaim} />
     </div>
   );
 };
+
+/* Reusable Detail Component */
+const Detail = ({ label, value, highlight }) => (
+  <div>
+    <label className="block text-slate-400 text-sm mb-2">
+      {label}
+    </label>
+    <div
+      className={`bg-slate-800 border border-slate-700 rounded-xl p-3 text-white font-medium ${highlight || ''
+        }`}
+    >
+      {value}
+    </div>
+  </div>
+);
 
 export default ClaimDetails;

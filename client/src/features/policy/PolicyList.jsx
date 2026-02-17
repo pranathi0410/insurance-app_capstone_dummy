@@ -65,7 +65,7 @@ const PolicyList = () => {
 
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold">Policies</h2>
+        <h2 className="text-3xl font-bold text-white">Policies</h2>
 
         {user?.role === 'UNDERWRITER' && (
           <Link

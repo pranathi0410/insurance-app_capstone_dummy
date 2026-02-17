@@ -13,7 +13,6 @@ const RiskDistributionChart = () => {
         setDistribution(res.data);
       } catch (err) {
         setError('Failed to load risk distribution data');
-        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -21,30 +20,75 @@ const RiskDistributionChart = () => {
     fetchDistribution();
   }, []);
 
-  if (loading) return <div className="card"><div className="animate-pulse space-y-3"><div className="h-4 bg-slate-200 rounded w-3/4"></div></div></div>;
-  if (error) return <div className="card alert alert-error">{error}</div>;
+  if (loading) {
+    return (
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-xl">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-slate-700 rounded w-1/3"></div>
+          <div className="h-4 bg-slate-800 rounded w-full"></div>
+          <div className="h-4 bg-slate-800 rounded w-full"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-slate-900/60 backdrop-blur-xl border border-red-500/30 text-red-400 rounded-2xl p-6">
+        {error}
+      </div>
+    );
+  }
 
   return (
-    <div className="card">
-      <h3 className="text-lg font-semibold text-slate-900 mb-4">Risk Distribution by Reinsurer 🔄</h3>
-      <div className="overflow-x-auto">
-        <table className="table-responsive">
-          <thead>
-            <tr className="bg-slate-100 border-b-2 border-slate-200">
-              <th className="table-th">Reinsurer</th>
-              <th className="table-th text-right">Total Allocated</th>
+    <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl">
+
+      <h3 className="text-xl font-semibold text-white mb-6">
+        Risk Distribution by Reinsurer 🔄
+      </h3>
+
+      <div className="overflow-x-auto rounded-xl border border-slate-800">
+        <table className="min-w-full text-sm text-slate-300">
+          <thead className="bg-slate-800 text-slate-400 uppercase text-xs tracking-wider">
+            <tr>
+              <th className="px-6 py-4 text-left">
+                Reinsurer
+              </th>
+              <th className="px-6 py-4 text-right">
+                Total Allocated
+              </th>
             </tr>
           </thead>
-          <tbody>
-            {distribution.length > 0 ? distribution.map((row, idx) => (
-              <tr key={row._id} className={idx % 2 === 0 ? 'bg-white' : 'bg-slate-50'}>
-                <td className="table-td font-medium text-slate-900">{row._id}</td>
-                <td className="table-td text-right text-success-600 font-semibold">₹{row.totalAllocated?.toFixed(2) || 0}</td>
+
+          <tbody className="divide-y divide-slate-800">
+            {distribution.length > 0 ? (
+              distribution.map((row, idx) => (
+                <tr
+                  key={row._id}
+                  className="hover:bg-slate-800/50 transition"
+                >
+                  <td className="px-6 py-4 text-white font-medium">
+                    {row._id}
+                  </td>
+                  <td className="px-6 py-4 text-right font-semibold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                    ₹{row.totalAllocated?.toFixed(2) || 0}
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="2"
+                  className="px-6 py-6 text-center text-slate-500"
+                >
+                  No data available
+                </td>
               </tr>
-            )) : <tr><td colSpan="2" className="table-td text-center text-slate-500">No data available</td></tr>}
+            )}
           </tbody>
         </table>
       </div>
+
     </div>
   );
 };

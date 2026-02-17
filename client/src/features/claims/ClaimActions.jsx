@@ -7,9 +7,10 @@ const ClaimActions = ({ claim, refresh }) => {
   const [actionError, setActionError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [approvedAmount, setApprovedAmount] = useState(claim.approvedAmount || claim.claimAmount);
-  
-  // Check if user has permission to perform claim actions
+  const [approvedAmount, setApprovedAmount] = useState(
+    claim.approvedAmount || claim.claimAmount
+  );
+
   const canReview = user?.role === 'CLAIMS_ADJUSTER';
   const canApprove = user?.role === 'CLAIMS_ADJUSTER';
   const canReject = user?.role === 'CLAIMS_ADJUSTER';
@@ -35,7 +36,9 @@ const ClaimActions = ({ claim, refresh }) => {
     setSuccessMsg('');
     setIsLoading(true);
     try {
-      await claimAPI.approveClaim(claim._id, { approvedAmount: parseFloat(approvedAmount) });
+      await claimAPI.approveClaim(claim._id, {
+        approvedAmount: parseFloat(approvedAmount),
+      });
       setSuccessMsg('Claim approved successfully');
       setTimeout(() => refresh(), 1000);
     } catch (err) {
@@ -81,65 +84,80 @@ const ClaimActions = ({ claim, refresh }) => {
 
   if (!canReview && !canApprove && !canReject && !canSettle) {
     return (
-      <div className="card mt-6 bg-amber-50 border-l-4 border-amber-500">
-        <p className="text-sm text-amber-800">You do not have permission to manage claims.</p>
+      <div className="mt-8 bg-amber-900/30 border border-amber-600 text-amber-300 p-4 rounded-xl">
+        You do not have permission to manage claims.
       </div>
     );
   }
 
   return (
-    <div className="mt-6">
+    <div className="mt-10">
+
+      {/* Error */}
       {actionError && (
-        <div className="alert alert-error mb-4">
+        <div className="mb-4 bg-red-900/30 border border-red-600 text-red-300 p-4 rounded-xl">
           {actionError}
         </div>
       )}
+
+      {/* Success */}
       {successMsg && (
-        <div className="alert alert-success mb-4">
+        <div className="mb-4 bg-green-900/30 border border-green-600 text-green-300 p-4 rounded-xl">
           {successMsg}
         </div>
       )}
 
-      <div className="card">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Claim Actions ⚙️</h3>
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl">
 
+        <h3 className="text-xl font-semibold text-white mb-6">
+          Claim Actions ⚙️
+        </h3>
+
+        {/* SUBMITTED → Review */}
         {claim.status === 'SUBMITTED' && canReview && (
           <button
             onClick={handleReview}
             disabled={isLoading}
-            className={`btn btn-warning ${isLoading ? 'btn-disabled' : ''}`}
+            className="px-5 py-2 rounded-xl bg-yellow-600 hover:bg-yellow-500 text-white font-medium transition disabled:opacity-50"
           >
             {isLoading ? 'Processing...' : 'Move to Review'}
           </button>
         )}
 
+        {/* IN_REVIEW → Approve / Reject */}
         {claim.status === 'IN_REVIEW' && canApprove && (
-          <div className="space-y-4">
+          <div className="space-y-5">
+
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm text-slate-400 mb-2">
                 Approved Amount (₹)
-                <span className="text-xs text-slate-500 ml-1">Max: ₹{claim.claimAmount}</span>
+                <span className="ml-2 text-xs text-slate-500">
+                  Max: ₹{claim.claimAmount}
+                </span>
               </label>
               <input
                 type="number"
                 value={approvedAmount}
-                onChange={e => setApprovedAmount(e.target.value)}
+                onChange={(e) => setApprovedAmount(e.target.value)}
                 max={claim.claimAmount}
-                className="input sm:w-48"
+                className="w-48 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-white focus:outline-none focus:ring
+                           focus:border-blue-500 transition"
               />
             </div>
-            <div className="flex gap-2 flex-wrap">
+
+            <div className="flex gap-3 flex-wrap">
               <button
                 onClick={handleApprove}
                 disabled={isLoading}
-                className={`btn btn-success ${isLoading ? 'btn-disabled' : ''}`}
+                className="px-5 py-2 rounded-xl bg-green-600 hover:bg-green-500 text-white font-medium transition disabled:opacity-50"
               >
                 {isLoading ? 'Approving...' : 'Approve Claim'}
               </button>
+
               <button
                 onClick={handleReject}
                 disabled={isLoading}
-                className={`btn btn-danger ${isLoading ? 'btn-disabled' : ''}`}
+                className="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white font-medium transition disabled:opacity-50"
               >
                 {isLoading ? 'Processing...' : 'Reject Claim'}
               </button>
@@ -147,27 +165,29 @@ const ClaimActions = ({ claim, refresh }) => {
           </div>
         )}
 
+        {/* APPROVED → Settle */}
         {claim.status === 'APPROVED' && canSettle && (
           <button
             onClick={handleSettle}
             disabled={isLoading}
-            className={`btn btn-primary ${isLoading ? 'btn-disabled' : ''}`}
+            className="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition disabled:opacity-50"
           >
             {isLoading ? 'Processing...' : 'Mark as Settled'}
           </button>
         )}
 
+        {/* Final States */}
         {(claim.status === 'REJECTED' || claim.status === 'SETTLED') && (
-          <div className="inline-block bg-slate-400 text-white px-4 py-2 rounded-lg text-sm font-medium">
-            {claim.status === 'REJECTED' ? 'Claim Rejected' : 'Claim Settled'}
+          <div className="inline-block bg-slate-700 text-slate-200 px-5 py-2 rounded-xl text-sm font-medium">
+            {claim.status === 'REJECTED'
+              ? 'Claim Rejected'
+              : 'Claim Settled'}
           </div>
         )}
 
-        {!canReview && !canApprove && !canReject && !canSettle && claim.status !== 'REJECTED' && claim.status !== 'SETTLED' && (
-          <p className="text-sm text-slate-500 italic">No actions available for this claim status or your role.</p>
-        )}
       </div>
     </div>
   );
 };
+
 export default ClaimActions;

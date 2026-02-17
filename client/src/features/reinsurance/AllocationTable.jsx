@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { reinsuranceAPI } from "../../services/api";
 
 const AllocationTable = ({ policyId }) => {
@@ -22,6 +21,7 @@ const AllocationTable = ({ policyId }) => {
         setError("Failed to load allocations");
       }
     };
+
     if (policyId) fetchAllocations();
   }, [policyId]);
 
@@ -33,70 +33,75 @@ const AllocationTable = ({ policyId }) => {
 
   if (!policyId)
     return (
-      <p className="text-gray-500 mt-4">
+      <p className="text-slate-400 mt-6">
         Select a policy to view allocations.
       </p>
     );
 
   if (error)
     return (
-      <p className="text-red-600 font-medium mt-4">{error}</p>
+      <p className="text-red-400 font-medium mt-6">
+        {error}
+      </p>
     );
 
   return (
-    <div className="mt-6 bg-white p-6 rounded-lg shadow-md">
+    <div className="mt-10 bg-slate-900/60 backdrop-blur-xl border border-slate-800 rounded-2xl p-8 shadow-2xl">
 
       {/* Title */}
-      <h3 className="text-xl font-semibold mb-4">
+      <h3 className="text-2xl font-semibold text-white mb-6">
         Risk Allocation Table
       </h3>
 
       {/* Validation Warning */}
       {validateAllocations() && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 text-red-400 rounded-lg">
           One or more allocations exceed treaty limits!
         </div>
       )}
 
       {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200">
-          <thead className="bg-gray-100">
+      <div className="overflow-x-auto rounded-xl border border-slate-800">
+        <table className="min-w-full text-sm text-slate-300">
+          <thead className="bg-slate-800 text-slate-400 uppercase text-xs tracking-wider">
             <tr>
-              <th className="px-4 py-2 text-left border">Reinsurer</th>
-              <th className="px-4 py-2 text-left border">Treaty</th>
-              <th className="px-4 py-2 text-right border">Allocated Amount</th>
-              <th className="px-4 py-2 text-right border">Allocated %</th>
-              <th className="px-4 py-2 text-right border">Treaty Limit</th>
+              <th className="px-6 py-4 text-left">Reinsurer</th>
+              <th className="px-6 py-4 text-left">Treaty</th>
+              <th className="px-6 py-4 text-right">Allocated Amount</th>
+              <th className="px-6 py-4 text-right">Allocated %</th>
+              <th className="px-6 py-4 text-right">Treaty Limit</th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody className="divide-y divide-slate-800">
             {allocations.length === 0 ? (
               <tr>
                 <td
                   colSpan="5"
-                  className="text-center py-4 text-gray-500"
+                  className="text-center py-6 text-slate-500"
                 >
                   No allocations found
                 </td>
               </tr>
             ) : (
               allocations.map((a, idx) => (
-                <tr key={idx} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border">
+                <tr
+                  key={idx}
+                  className="hover:bg-slate-800/50 transition"
+                >
+                  <td className="px-6 py-4 text-white">
                     {a.reinsurerId?.name || "N/A"}
                   </td>
-                  <td className="px-4 py-2 border">
+                  <td className="px-6 py-4">
                     {a.treatyId?.treatyName || "N/A"}
                   </td>
-                  <td className="px-4 py-2 border text-right">
+                  <td className="px-6 py-4 text-right font-medium text-white">
                     ₹{a.allocatedAmount.toLocaleString()}
                   </td>
-                  <td className="px-4 py-2 border text-right">
+                  <td className="px-6 py-4 text-right">
                     {a.allocatedPercentage}%
                   </td>
-                  <td className="px-4 py-2 border text-right">
+                  <td className="px-6 py-4 text-right text-slate-400">
                     ₹{a.treatyId?.treatyLimit?.toLocaleString()}
                   </td>
                 </tr>
@@ -107,11 +112,13 @@ const AllocationTable = ({ policyId }) => {
       </div>
 
       {/* Retained Amount */}
-      <div className="mt-4 text-lg">
-        <span className="font-semibold">
+      <div className="mt-6 text-lg">
+        <span className="text-slate-400">
           Retained Amount:
         </span>{" "}
-        ₹{retainedAmount.toLocaleString()}
+        <span className="font-semibold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+          ₹{retainedAmount.toLocaleString()}
+        </span>
       </div>
 
     </div>

@@ -31,7 +31,7 @@ const TreatyList = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>Reinsurance Treaties</h2>
+      <h2 className='text-white'>Reinsurance Treaties</h2>
       <button
         className="btn btn-primary"
         style={{ marginBottom: 16 }}
@@ -54,7 +54,7 @@ const TreatyList = () => {
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead>
-            <tr style={{ backgroundColor: '#f5f5f5', borderBottom: '2px solid #ddd' }}>
+            <tr style={{  borderBottom: '2px solid #ddd' }}>
               <th style={{ padding: '12px', textAlign: 'left' }}>Treaty Name</th>
               <th style={{ padding: '12px', textAlign: 'left' }}>Type</th>
               <th style={{ padding: '12px', textAlign: 'left' }}>Reinsurer</th>
